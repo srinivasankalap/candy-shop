@@ -1,24 +1,39 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react';
+import Header from './components/Layout/Header';
+import Adding from './components/Items/Adding';
+import List from './components/Items/List';
+import Cart from './components/Cart/Cart';
+import CartProvider from './store/cart-provider';
 
 function App() {
+  const [userList, setUserList]=useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+
+  const addUser=(username,userage,usercollege)=>{
+    setUserList((prev)=>{
+      return [...prev, {name: username, age: userage, id: Math.random().toString(), college: usercollege}]
+    });
+  }
+  const addToCartHandler = (user) => {
+    setCartItems((prevCart) => [...prevCart, user]);
+  };
+
+  const enableCart = () => {
+    setShowCart(true);
+  };
+
+  const disableCart = () => {
+    setShowCart(false);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <CartProvider>
+      {showCart&&<Cart onClose={disableCart} cartItems={cartItems}/>}
+      <Header onShow={enableCart}/>
+      <Adding onAdd={addUser} />
+      <List users={userList} onAddToCart={addToCartHandler} />
+    </CartProvider>
   );
 }
 
